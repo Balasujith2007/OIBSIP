@@ -1,0 +1,57 @@
+================================================================
+              OASIS INFOBYTE SIP — TASK 1
+               ADVANCED VOICE ASSISTANT
+================================================================
+  Assistant Name : Oasis Assistant
+  Platform       : Windows 11
+  Python Version : 3.14.6
+  Weather API    : Live wttr.in Fallback
+  Email Config   : Optional (Not Set)
+================================================================
+  Type 'help' or say 'help' at any time for sample commands.
+  Type 'exit' or say 'exit' / 'quit' to terminate.
+================================================================
+
+[ASSISTANT] Good afternoon! Hello, I am Oasis Assistant. How can I assist you today?
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] What time is it
+[PROCESSING] Command: 'What time is it'
+[ASSISTANT] The current time is 03:41 PM.
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] What is today's date
+[PROCESSING] Command: 'What is today's date'
+[ASSISTANT] Today is Saturday, September 12, 2026.
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] What is the weather in London
+[PROCESSING] Command: 'What is the weather in London'
+[WEATHER] Fetching live weather data for 'London'...
+[ASSISTANT] The current weather in London is Sunny with a temperature of 18 degrees Celsius (feels like 14 degrees) and 57 percent humidity.
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] Set a reminder for 5 seconds to drink water
+[PROCESSING] Command: 'Set a reminder for 5 seconds to drink water'
+[ASSISTANT] Got it. I have set a reminder for 5 second(s). I will notify you when it finishes.
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] Tell me a joke
+[PROCESSING] Command: 'Tell me a joke'
+[ASSISTANT] Why do programmers prefer dark mode? Because light attracts bugs!
+
+==================================================
+[REMINDER ALERT] Time's up! Reminder: Don't forget to drink water
+==================================================
+[ASSISTANT] Reminder alert: Your timer for 5 seconds is complete. Don't forget to drink water
+
+[LISTENING] Listening for command (speak clearly into your microphone)...
+[PROCESSING] Recognizing speech...
+[YOU] Goodbye
+[PROCESSING] Command: 'Goodbye'
+[ASSISTANT] Goodbye! Have a wonderful day. Thank you for using Oasis Assistant.

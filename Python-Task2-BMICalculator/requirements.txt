@@ -1,0 +1,13 @@
+# Oasis Infobyte SIP — Python Programming Internship
+# Task 2: BMI Calculator
+# 
+# Dependencies:
+# This project uses Python's standard library (Python >= 3.8) and built-in Tkinter.
+# No external third-party pip packages are required.
+#
+# Standard Library modules used:
+# - tkinter (GUI and ttk widgets)
+# - datetime (Timestamping session calculations)
+# - typing (Static type hinting)
+# - unittest (Automated test runner)
+# - sys (CLI argument parsing and system interaction)
