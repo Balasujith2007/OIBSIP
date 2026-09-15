@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProFit BMI & Health Intelligence — Oasis Infobyte Task 2</title>
+  <meta name="description" content="Advanced Body Mass Index (BMI) calculator, health intelligence engine, BMR/TDEE calorie estimator, WHO classification, and historical trend tracking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      /* Dark Theme (Default) */
+      --bg-gradient: radial-gradient(circle at 10% 20%, #0d1527 0%, #070b14 100%);
+      --bg-surface: rgba(18, 26, 47, 0.75);
+      --bg-surface-elevated: rgba(28, 41, 71, 0.8);
+      --bg-input: rgba(13, 21, 39, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.2);
+      
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      
+      --accent-primary: #10B981;
+      --accent-glow: rgba(16, 185, 129, 0.35);
+      --primary-gradient: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      --indigo-gradient: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+      
+      --underweight-color: #38BDF8;
+      --underweight-glow: rgba(56, 189, 248, 0.25);
+      --normal-color: #10B981;
+      --normal-glow: rgba(16, 185, 129, 0.25);
+      --overweight-color: #F59E0B;
+      --overweight-glow: rgba(245, 158, 11, 0.25);
+      --obesity-color: #F43F5E;
+      --obesity-glow: rgba(244, 63, 94, 0.25);
+      
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+      --shadow-glow: 0 0 30px var(--accent-glow);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #F1F5F9 0%, #E2E8F0 100%);
+      --bg-surface: rgba(255, 255, 255, 0.85);
+      --bg-surface-elevated: rgba(255, 255, 255, 0.95);
+      --bg-input: #F8FAFC;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-hover: rgba(0, 0, 0, 0.2);
+      
+      --text-main: #0F172A;
+      --text-muted: #475569;
+      --text-dim: #94A3B8;
+      
+      --accent-glow: rgba(16, 185, 129, 0.2);
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      padding: 24px 16px 60px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Top Navigation / Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--bg-surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-primary);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      margin-left: 6px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-toggle {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-family: var(--font-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-toggle:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    /* Main Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 28px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 960px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+      background: var(--bg-surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Unit Switcher Tabs */
+    .tab-switcher {
+      display: flex;
+      background: var(--bg-input);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      padding: 6px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--primary-gradient);
+      color: #ffffff;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .value-badge {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 48px 12px 16px;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .input-unit {
+      position: absolute;
+      right: 16px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    /* Sliders */
+    .range-slider {
+      width: 100%;
+      margin-top: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--accent-glow);
+      transition: transform 0.1s;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* Two Column Inputs */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Gender / Activity Selectors */
+    .gender-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .gender-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-input);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .gender-btn.active {
+      border-color: var(--accent-primary);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--text-main);
+    }
+
+    .select-dropdown {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1.5px solid var(--border-color);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select-dropdown:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Action Buttons */
+    .btn-action-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-primary {
+      flex: 2;
+      background: var(--primary-gradient);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      color: var(--text-main);
+      border-color: var(--border-hover);
+    }
+
+    /* Output / Results Panel */
+    .gauge-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 20px;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      max-width: 320px;
+      overflow: visible;
+    }
+
+    .gauge-needle {
+      transform-origin: 150px 140px;
+      transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .bmi-value-display {
+      text-align: center;
+      margin-top: -30px;
+    }
+
+    .bmi-score {
+      font-family: var(--font-mono);
+      font-size: 3.4rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .bmi-category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    /* Category Spectrum Bar */
+    .spectrum-bar-container {
+      margin: 24px 0 16px;
+    }
+
+    .spectrum-bar {
+      height: 10px;
+      border-radius: 6px;
+      background: linear-gradient(to right, 
+        var(--underweight-color) 0%, 
+        var(--underweight-color) 25%, 
+        var(--normal-color) 25%, 
+        var(--normal-color) 55%, 
+        var(--overweight-color) 55%, 
+        var(--overweight-color) 75%, 
+        var(--obesity-color) 75%, 
+        var(--obesity-color) 100%
+      );
+      position: relative;
+    }
+
+    .spectrum-marker {
+      position: absolute;
+      top: -6px;
+      width: 8px;
+      height: 22px;
+      background: #FFFFFF;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5), 0 0 8px #ffffff;
+      transform: translateX(-50%);
+      transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .spectrum-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* Target Ideal Weight Banner */
+    .ideal-weight-box {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ideal-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ideal-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .ideal-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .ideal-range {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+    }
+
+    .ideal-diff {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    /* Metric Cards Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .metric-card {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .metric-val {
+      font-size: 1.2rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin-top: 4px;
+      color: var(--text-main);
+    }
+
+    .metric-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Recommendations & Insights Box */
+    .recommendations-card {
+      margin-top: 28px;
+    }
+
+    .recs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .recs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rec-item {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .rec-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .rec-header span {
+      font-size: 1.3rem;
+    }
+
+    .rec-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* History & Analytics Section */
+    .history-card {
+      margin-top: 28px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    th {
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .table-badge {
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .btn-icon:hover {
+      color: var(--obesity-color);
+      background: rgba(244, 63, 94, 0.1);
+    }
+
+    /* Trend Chart SVG */
+    .chart-container {
+      margin-top: 20px;
+      height: 180px;
+      background: var(--bg-surface-elevated);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+
+    .disclaimer-text {
+      max-width: 700px;
+      margin: 8px auto 0;
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+        </svg>
+      </div>
+      <div>
+        <div style="display:flex; align-items:center;">
+          <span class="brand-title">ProFit BMI Calculator</span>
+          <span class="brand-badge">Oasis Infobyte Task 2</span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">WHO Standard Health Intelligence Engine</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button class="btn-toggle" id="theme-toggle" title="Toggle Dark/Light Mode">
+        <span id="theme-icon">☀️</span>
+        <span id="theme-text">Light</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Grid -->
+  <main class="dashboard-grid">
+    <!-- Left Column: Input Form -->
+    <section class="glass-card" aria-label="BMI Calculator Form">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span>⚙️</span> Biometric Inputs
+        </h2>
+        <div class="tab-switcher" role="tablist">
+          <button class="tab-btn active" id="tab-metric" onclick="setUnitSystem('metric')">Metric (kg/cm)</button>
+          <button class="tab-btn" id="tab-imperial" onclick="setUnitSystem('imperial')">Imperial (lb/in)</button>
+        </div>
+      </div>
+
+      <!-- Gender Selector -->
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <div class="gender-grid">
+          <button type="button" class="gender-btn active" id="gender-male" onclick="setGender('male')">
+            <span>👨</span> Male
+          </button>
+          <button type="button" class="gender-btn" id="gender-female" onclick="setGender('female')">
+            <span>👩</span> Female
+          </button>
+        </div>
+      </div>
+
+      <!-- Age Input -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="input-age" class="form-label">Age</label>
+          <span class="value-badge" id="badge-age">25 yrs</span>
+        </div>
+        <div class="input-wrapper">
+          <input type="number" id="input-age" class="input-field" value="25" min="2" max="120" oninput="handleAgeChange(this.value)">
+          <span class="input-unit">years</span>
+        </div>
+        <input type="range" id="slider-age" class="range-slider" min="2" max="100" value="25" oninput="handleAgeSlider(this.value)">
+      </div>
+
+      <!-- Height Input (Metric cm / Imperial ft+in) -->
+      <div class="form-group" id="group-height-metric">
+        <div class="label-row">
+          <label for="input-height-cm" class="form-label">Height</label>
+          <span class="value-badge" id="badge-height">175 cm</span>
+        </div>
+        <div class="input-wrapper">
+          <input type="number" id="input-height-cm" class="input-field" value="175" min="50" max="250" step="0.5" oninput="handleHeightMetric(this.value)">
+          <span class="input-unit">cm</span>
+        </div>
+        <input type="range" id="slider-height-cm" class="range-slider" min="90" max="230" value="175" oninput="handleHeightMetricSlider(this.value)">
+      </div>
+
+      <div class="form-group" id="group-height-imperial" style="display: none;">
+        <div class="label-row">
+          <label class="form-label">Height (Feet & Inches)</label>
+          <span class="value-badge" id="badge-height-imp">5 ft 9 in</span>
+        </div>
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input type="number" id="input-height-ft" class="input-field" value="5" min="1" max="8" oninput="handleHeightImperial()">
+            <span class="input-unit">ft</span>
+          </div>
+          <div class="input-wrapper">
+            <input type="number" id="input-height-in" class="input-field" value="9" min="0" max="11" oninput="handleHeightImperial()">
+            <span class="input-unit">in</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weight Input (Metric kg / Imperial lb) -->
+      <div class="form-group" id="group-weight-metric">
+        <div class="label-row">
+          <label for="input-weight-kg" class="form-label">Weight</label>
+          <span class="value-badge" id="badge-weight">70 kg</span>
+        </div>
+        <div class="input-wrapper">
+          <input type="number" id="input-weight-kg" class="input-field" value="70" min="10" max="300" step="0.1" oninput="handleWeightMetric(this.value)">
+          <span class="input-unit">kg</span>
+        </div>
+        <input type="range" id="slider-weight-kg" class="range-slider" min="30" max="180" value="70" oninput="handleWeightMetricSlider(this.value)">
+      </div>
+
+      <div class="form-group" id="group-weight-imperial" style="display: none;">
+        <div class="label-row">
+          <label for="input-weight-lb" class="form-label">Weight</label>
+          <span class="value-badge" id="badge-weight-imp">154.3 lbs</span>
+        </div>
+        <div class="input-wrapper">
+          <input type="number" id="input-weight-lb" class="input-field" value="154.3" min="20" max="600" step="0.5" oninput="handleWeightImperial(this.value)">
+          <span class="input-unit">lbs</span>
+        </div>
+        <input type="range" id="slider-weight-lb" class="range-slider" min="60" max="400" value="154.3" oninput="handleWeightImperialSlider(this.value)">
+      </div>
+
+      <!-- Activity Level -->
+      <div class="form-group">
+        <label for="select-activity" class="form-label">Physical Activity Level</label>
+        <select id="select-activity" class="select-dropdown" onchange="calculateAll()">
+          <option value="1.2">Sedentary (Little or no exercise)</option>
+          <option value="1.375" selected>Lightly Active (Exercise 1-3 days/week)</option>
+          <option value="1.55">Moderately Active (Exercise 3-5 days/week)</option>
+          <option value="1.725">Very Active (Hard exercise 6-7 days/week)</option>
+          <option value="1.9">Super Active (Physical job or 2x daily training)</option>
+        </select>
+      </div>
+
+      <!-- Form Buttons -->
+      <div class="btn-action-group">
+        <button class="btn-primary" id="btn-save-log" onclick="logMeasurement()">
+          <span>💾</span> Save Record
+        </button>
+        <button class="btn-secondary" id="btn-reset" onclick="resetForm()">
+          Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Column: Results & Health Intelligence -->
+    <section class="glass-card" aria-label="BMI Results and Analysis">
+      <div class="card-header">
+        <h2 class="card-title">
+          <span>📊</span> Health Analysis
+        </h2>
+        <span style="font-size: 0.8rem; color: var(--text-dim);" id="calc-status">Live Calculated</span>
+      </div>
+
+      <!-- Gauge Speedometer -->
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 300 170">
+          <!-- Background Arc Segments -->
+          <!-- Underweight (Blue) -->
+          <path d="M 30 140 A 120 120 0 0 1 82 55" fill="none" stroke="#38BDF8" stroke-width="18" stroke-linecap="round"/>
+          <!-- Normal (Green) -->
+          <path d="M 87 50 A 120 120 0 0 1 150 20" fill="none" stroke="#10B981" stroke-width="18"/>
+          <!-- Overweight (Yellow) -->
+          <path d="M 150 20 A 120 120 0 0 1 213 50" fill="none" stroke="#F59E0B" stroke-width="18"/>
+          <!-- Obese (Red) -->
+          <path d="M 218 55 A 120 120 0 0 1 270 140" fill="none" stroke="#F43F5E" stroke-width="18" stroke-linecap="round"/>
+          
+          <!-- Gauge Center & Needle -->
+          <g id="gauge-needle-group" class="gauge-needle">
+            <polygon points="150,30 146,140 154,140" fill="#F8FAFC" />
+            <circle cx="150" cy="140" r="10" fill="#F8FAFC" stroke="rgba(0,0,0,0.3)" stroke-width="2"/>
+            <circle cx="150" cy="140" r="4" fill="#0F172A" />
+          </g>
+        </svg>
+
+        <!-- BMI Big Display -->
+        <div class="bmi-value-display">
+          <div class="bmi-score" id="display-bmi-score">22.9</div>
+          <div class="bmi-category-badge" id="display-bmi-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981;">
+            <span>●</span> <span id="display-category-text">Normal Weight</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Segment Spectrum Bar -->
+      <div class="spectrum-bar-container">
+        <div class="spectrum-bar">
+          <div class="spectrum-marker" id="spectrum-marker" style="left: 45%;"></div>
+        </div>
+        <div class="spectrum-labels">
+          <span>&lt; 18.5 Underweight</span>
+          <span>18.5 - 24.9 Normal</span>
+          <span>25 - 29.9 Overweight</span>
+          <span>&ge; 30 Obese</span>
+        </div>
+      </div>
+
+      <!-- Healthy Weight Range Box -->
+      <div class="ideal-weight-box">
+        <div class="ideal-left">
+          <div class="ideal-icon">🎯</div>
+          <div>
+            <div class="ideal-title">Healthy Weight Range for your Height</div>
+            <div class="ideal-range" id="display-healthy-range">56.7 – 76.3 kg</div>
+          </div>
+        </div>
+        <div class="ideal-diff" id="display-weight-diff" style="background: rgba(16,185,129,0.15); color: #10B981;">
+          Optimal Range ✨
+        </div>
+      </div>
+
+      <!-- Secondary Metrics Grid -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Daily Calories (TDEE)</div>
+          <div class="metric-val" id="display-tdee">2,180</div>
+          <div class="metric-sub">kcal / day</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Basal Metabolic Rate</div>
+          <div class="metric-val" id="display-bmr">1,620</div>
+          <div class="metric-sub">BMR kcal</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Est. Body Fat %</div>
+          <div class="metric-val" id="display-fat">18.4%</div>
+          <div class="metric-sub">Deurenberg formula</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Health Insights & Recommendations Section -->
+  <section class="glass-card recommendations-card" aria-label="Personalized Recommendations">
+    <div class="card-header">
+      <h2 class="card-title">
+        <span>💡</span> Personalized Health & Nutrition Guidelines
+      </h2>
+      <span class="brand-badge" id="rec-category-badge">Category: Normal Weight</span>
+    </div>
+
+    <div class="recs-grid">
+      <div class="rec-item">
+        <div class="rec-header">
+          <span>🥗</span>
+          <div>Diet & Nutrition</div>
+        </div>
+        <p class="rec-text" id="rec-diet">
+          Maintain a balanced intake of lean proteins, fiber-rich whole grains, healthy fats, and colorful vegetables to sustain optimal metabolic health.
+        </p>
+      </div>
+
+      <div class="rec-item">
+        <div class="rec-header">
+          <span>🏃</span>
+          <div>Physical Activity</div>
+        </div>
+        <p class="rec-text" id="rec-exercise">
+          Aim for at least 150 minutes of moderate aerobic activity or 75 minutes of vigorous exercise weekly, paired with 2+ days of strength training.
+        </p>
+      </div>
+
+      <div class="rec-item">
+        <div class="rec-header">
+          <span>💧</span>
+          <div>Hydration & Lifestyle</div>
+        </div>
+        <p class="rec-text" id="rec-lifestyle">
+          Drink 2.5 to 3.5 liters of water daily, prioritize 7-9 hours of restful sleep, and monitor your physical metrics once every 2-4 weeks.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- History & Analytics Section -->
+  <section class="glass-card history-card" aria-label="Measurement History and Log">
+    <div class="card-header">
+      <h2 class="card-title">
+        <span>📈</span> Measurement History & Log
+      </h2>
+      <div class="history-actions">
+        <button class="btn-toggle" onclick="exportHistoryCSV()">📥 Export CSV</button>
+        <button class="btn-toggle" onclick="clearHistory()" style="color: var(--obesity-color);">🗑️ Clear</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="history-table">
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>System</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>BMI Score</th>
+            <th>Category</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="history-tbody">
+          <!-- Rows rendered by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p><strong>Oasis Infobyte Internship Program (OIBSIP)</strong> — Python Development Task 2</p>
+    <p class="disclaimer-text">
+      ⚠️ <strong>Medical Disclaimer:</strong> Body Mass Index (BMI) is a screening metric and does not account for muscle mass, bone density, ethnic variation, or body fat distribution. Always consult healthcare professionals for medical guidance.
+    </p>
+  </footer>
+</div>
+
+<!-- Toast element -->
+<div class="toast" id="toast">Record saved successfully!</div>
+
+<script>
+  // App State
+  let currentUnit = 'metric';
+  let currentGender = 'male';
+  let historyLogs = JSON.parse(localStorage.getItem('oibsip_bmi_history') || '[]');
+
+  // Initialize Default History if empty
+  if (historyLogs.length === 0) {
+    historyLogs = [
+      { id: 1, date: '2026-09-10 10:15', system: 'Metric', height: '175 cm', weight: '72.0 kg', bmi: 23.5, category: 'Normal weight' },
+      { id: 2, date: '2026-09-12 18:30', system: 'Metric', height: '175 cm', weight: '71.0 kg', bmi: 23.2, category: 'Normal weight' },
+      { id: 3, date: '2026-09-15 08:30', system: 'Metric', height: '175 cm', weight: '70.0 kg', bmi: 22.9, category: 'Normal weight' }
+    ];
+    localStorage.setItem('oibsip_bmi_history', JSON.stringify(historyLogs));
+  }
+
+  // Theme Toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const nextTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    themeIcon.textContent = isDark ? '🌙' : '☀️';
+    themeText.textContent = isDark ? 'Dark' : 'Light';
+  });
+
+  // Switch Unit System
+  function setUnitSystem(unit) {
+    currentUnit = unit;
+    const tabMetric = document.getElementById('tab-metric');
+    const tabImperial = document.getElementById('tab-imperial');
+    const metricHeight = document.getElementById('group-height-metric');
+    const imperialHeight = document.getElementById('group-height-imperial');
+    const metricWeight = document.getElementById('group-weight-metric');
+    const imperialWeight = document.getElementById('group-weight-imperial');
+
+    if (unit === 'metric') {
+      tabMetric.classList.add('active');
+      tabImperial.classList.remove('active');
+      metricHeight.style.display = 'block';
+      imperialHeight.style.display = 'none';
+      metricWeight.style.display = 'block';
+      imperialWeight.style.display = 'none';
+    } else {
+      tabImperial.classList.add('active');
+      tabMetric.classList.remove('active');
+      metricHeight.style.display = 'none';
+      imperialHeight.style.display = 'block';
+      metricWeight.style.display = 'none';
+      imperialWeight.style.display = 'block';
+    }
+    calculateAll();
+  }
+
+  // Gender Switch
+  function setGender(gender) {
+    currentGender = gender;
+    document.getElementById('gender-male').classList.toggle('active', gender === 'male');
+    document.getElementById('gender-female').classList.toggle('active', gender === 'female');
+    calculateAll();
+  }
+
+  // Input Handlers
+  function handleAgeChange(val) {
+    document.getElementById('slider-age').value = val;
+    document.getElementById('badge-age').textContent = `${val} yrs`;
+    calculateAll();
+  }
+  function handleAgeSlider(val) {
+    document.getElementById('input-age').value = val;
+    document.getElementById('badge-age').textContent = `${val} yrs`;
+    calculateAll();
+  }
+
+  function handleHeightMetric(val) {
+    document.getElementById('slider-height-cm').value = val;
+    document.getElementById('badge-height').textContent = `${val} cm`;
+    calculateAll();
+  }
+  function handleHeightMetricSlider(val) {
+    document.getElementById('input-height-cm').value = val;
+    document.getElementById('badge-height').textContent = `${val} cm`;
+    calculateAll();
+  }
+
+  function handleHeightImperial() {
+    const ft = parseFloat(document.getElementById('input-height-ft').value) || 0;
+    const inch = parseFloat(document.getElementById('input-height-in').value) || 0;
+    document.getElementById('badge-height-imp').textContent = `${ft} ft ${inch} in`;
+    calculateAll();
+  }
+
+  function handleWeightMetric(val) {
+    document.getElementById('slider-weight-kg').value = val;
+    document.getElementById('badge-weight').textContent = `${val} kg`;
+    calculateAll();
+  }
+  function handleWeightMetricSlider(val) {
+    document.getElementById('input-weight-kg').value = val;
+    document.getElementById('badge-weight').textContent = `${val} kg`;
+    calculateAll();
+  }
+
+  function handleWeightImperial(val) {
+    document.getElementById('slider-weight-lb').value = val;
+    document.getElementById('badge-weight-imp').textContent = `${val} lbs`;
+    calculateAll();
+  }
+  function handleWeightImperialSlider(val) {
+    document.getElementById('input-weight-lb').value = val;
+    document.getElementById('badge-weight-imp').textContent = `${val} lbs`;
+    calculateAll();
+  }
+
+  // Calculation Engine
+  function calculateAll() {
+    let heightCm = 0;
+    let weightKg = 0;
+    const age = parseFloat(document.getElementById('input-age').value) || 25;
+    const activityFactor = parseFloat(document.getElementById('select-activity').value) || 1.375;
+
+    if (currentUnit === 'metric') {
+      heightCm = parseFloat(document.getElementById('input-height-cm').value) || 175;
+      weightKg = parseFloat(document.getElementById('input-weight-kg').value) || 70;
+    } else {
+      const ft = parseFloat(document.getElementById('input-height-ft').value) || 5;
+      const inch = parseFloat(document.getElementById('input-height-in').value) || 9;
+      const totalInches = (ft * 12) + inch;
+      heightCm = totalInches * 2.54;
+      const weightLb = parseFloat(document.getElementById('input-weight-lb').value) || 154.3;
+      weightKg = weightLb * 0.45359237;
+    }
+
+    if (heightCm <= 0 || weightKg <= 0) return;
+
+    // BMI Formula
+    const heightM = heightCm / 100;
+    const bmi = weightKg / (heightM * heightM);
+    const roundedBMI = Math.round(bmi * 10) / 10;
+
+    // Classification
+    let category = "Normal weight";
+    let color = "#10B981";
+    let bgLight = "rgba(16, 185, 129, 0.2)";
+    let dietAdvice = "";
+    let exerciseAdvice = "";
+    let lifestyleAdvice = "";
+
+    if (bmi < 18.5) {
+      category = "Underweight";
+      color = "#38BDF8";
+      bgLight = "rgba(56, 189, 248, 0.2)";
+      dietAdvice = "Focus on nutrient-dense foods: nuts, avocados, whole grains, dairy, lean poultry, and protein-packed smoothies to build healthy lean tissue.";
+      exerciseAdvice = "Prioritize progressive resistance strength training 3-4 days a week to stimulate muscle growth while moderating high-intensity cardio.";
+      lifestyleAdvice = "Eat frequent smaller meals every 3 hours and track your daily calorie intake to ensure a consistent slight caloric surplus.";
+    } else if (bmi < 25.0) {
+      category = "Normal weight";
+      color = "#10B981";
+      bgLight = "rgba(16, 185, 129, 0.2)";
+      dietAdvice = "Maintain a balanced intake of lean proteins, fiber-rich whole grains, healthy fats, and colorful vegetables to sustain optimal metabolic health.";
+      exerciseAdvice = "Aim for at least 150 minutes of moderate aerobic activity or 75 minutes of vigorous exercise weekly, paired with 2+ days of strength training.";
+      lifestyleAdvice = "Drink 2.5 to 3.5 liters of water daily, prioritize 7-9 hours of restful sleep, and monitor your physical metrics once every 2-4 weeks.";
+    } else if (bmi < 30.0) {
+      category = "Overweight";
+      color = "#F59E0B";
+      bgLight = "rgba(245, 158, 11, 0.2)";
+      dietAdvice = "Adopt a moderate calorie deficit of 300-500 kcal/day. Prioritize high-volume green vegetables, lean proteins, and minimize refined sugars and ultra-processed foods.";
+      exerciseAdvice = "Combine brisk walking, swimming, or cycling (30-45 mins daily) with resistance training to preserve lean muscle while burning excess body fat.";
+      lifestyleAdvice = "Track portion sizes, limit sugary beverages, avoid late-night snacking, and practice mindful eating habits.";
+    } else {
+      category = "Obesity";
+      color = "#F43F5E";
+      bgLight = "rgba(244, 63, 94, 0.2)";
+      dietAdvice = "Consult a certified nutritionist or medical professional. Create a sustainable whole-food dietary plan emphasizing high satiety foods and low glycemic index meals.";
+      exerciseAdvice = "Start with low-impact joint-friendly exercises such as water aerobics, walking, and stationary cycling before transitioning to higher intensities.";
+      lifestyleAdvice = "Schedule routine health screenings for blood pressure, glucose, and lipid profiles to monitor cardiovascular well-being proactively.";
+    }
+
+    // Update Display Elements
+    document.getElementById('display-bmi-score').textContent = roundedBMI.toFixed(1);
+    document.getElementById('display-category-text').textContent = category;
+    
+    const badge = document.getElementById('display-bmi-badge');
+    badge.style.color = color;
+    badge.style.background = bgLight;
+    badge.style.borderColor = color;
+
+    // Update Gauge Needle (0 deg at left = 10 BMI, 180 deg at right = 40 BMI)
+    const clampedBMI = Math.min(Math.max(bmi, 10), 40);
+    const angle = ((clampedBMI - 10) / 30) * 180 - 90; // -90 deg to +90 deg
+    document.getElementById('gauge-needle-group').style.transform = `rotate(${angle}deg)`;
+
+    // Update Spectrum Marker Percentage
+    let percent = ((clampedBMI - 12) / 28) * 100;
+    percent = Math.min(Math.max(percent, 2), 98);
+    document.getElementById('spectrum-marker').style.left = `${percent}%`;
+
+    // Healthy Weight Range Calculation (BMI 18.5 - 24.9)
+    const minHealthyKg = 18.5 * (heightM * heightM);
+    const maxHealthyKg = 24.9 * (heightM * heightM);
+    
+    const healthyRangeEl = document.getElementById('display-healthy-range');
+    const weightDiffEl = document.getElementById('display-weight-diff');
+
+    if (currentUnit === 'metric') {
+      healthyRangeEl.textContent = `${minHealthyKg.toFixed(1)} – ${maxHealthyKg.toFixed(1)} kg`;
+      if (weightKg < minHealthyKg) {
+        const toGain = (minHealthyKg - weightKg).toFixed(1);
+        weightDiffEl.textContent = `Gain ${toGain} kg for target`;
+        weightDiffEl.style.color = '#38BDF8';
+        weightDiffEl.style.background = 'rgba(56, 189, 248, 0.15)';
+      } else if (weightKg > maxHealthyKg) {
+        const toLose = (weightKg - maxHealthyKg).toFixed(1);
+        weightDiffEl.textContent = `Lose ${toLose} kg for target`;
+        weightDiffEl.style.color = '#F59E0B';
+        weightDiffEl.style.background = 'rgba(245, 158, 11, 0.15)';
+      } else {
+        weightDiffEl.textContent = 'Optimal Range ✨';
+        weightDiffEl.style.color = '#10B981';
+        weightDiffEl.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    } else {
+      const minHealthyLb = minHealthyKg * 2.20462;
+      const maxHealthyLb = maxHealthyKg * 2.20462;
+      const curLb = weightKg * 2.20462;
+      healthyRangeEl.textContent = `${minHealthyLb.toFixed(1)} – ${maxHealthyLb.toFixed(1)} lbs`;
+      if (curLb < minHealthyLb) {
+        const toGain = (minHealthyLb - curLb).toFixed(1);
+        weightDiffEl.textContent = `Gain ${toGain} lbs for target`;
+        weightDiffEl.style.color = '#38BDF8';
+        weightDiffEl.style.background = 'rgba(56, 189, 248, 0.15)';
+      } else if (curLb > maxHealthyLb) {
+        const toLose = (curLb - maxHealthyLb).toFixed(1);
+        weightDiffEl.textContent = `Lose ${toLose} lbs for target`;
+        weightDiffEl.style.color = '#F59E0B';
+        weightDiffEl.style.background = 'rgba(245, 158, 11, 0.15)';
+      } else {
+        weightDiffEl.textContent = 'Optimal Range ✨';
+        weightDiffEl.style.color = '#10B981';
+        weightDiffEl.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    }
+
+    // BMR & TDEE (Mifflin-St Jeor)
+    let bmr = (10 * weightKg) + (6.25 * heightCm) - (5 * age);
+    bmr += (currentGender === 'male') ? 5 : -161;
+    const tdee = bmr * activityFactor;
+
+    document.getElementById('display-bmr').textContent = Math.round(bmr).toLocaleString();
+    document.getElementById('display-tdee').textContent = Math.round(tdee).toLocaleString();
+
+    // Body Fat Estimate (Deurenberg Formula)
+    const sexVal = (currentGender === 'male') ? 1 : 0;
+    let bodyFat = (1.20 * bmi) + (0.23 * age) - (10.8 * sexVal) - 5.4;
+    bodyFat = Math.max(bodyFat, 3);
+    document.getElementById('display-fat').textContent = `${bodyFat.toFixed(1)}%`;
+
+    // Update Recommendations
+    document.getElementById('rec-category-badge').textContent = `Category: ${category}`;
+    document.getElementById('rec-diet').textContent = dietAdvice;
+    document.getElementById('rec-exercise').textContent = exerciseAdvice;
+    document.getElementById('rec-lifestyle').textContent = lifestyleAdvice;
+  }
+
+  // History Management
+  function renderHistoryTable() {
+    const tbody = document.getElementById('history-tbody');
+    tbody.innerHTML = '';
+
+    if (historyLogs.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--text-dim); padding: 24px;">No measurement records found. Calculate & click Save Record!</td></tr>`;
+      return;
+    }
+
+    historyLogs.slice().reverse().forEach((log) => {
+      const tr = document.createElement('tr');
+      let badgeColor = '#10B981';
+      let badgeBg = 'rgba(16, 185, 129, 0.15)';
+      if (log.category === 'Underweight') { badgeColor = '#38BDF8'; badgeBg = 'rgba(56, 189, 248, 0.15)'; }
+      else if (log.category === 'Overweight') { badgeColor = '#F59E0B'; badgeBg = 'rgba(245, 158, 11, 0.15)'; }
+      else if (log.category === 'Obesity') { badgeColor = '#F43F5E'; badgeBg = 'rgba(244, 63, 94, 0.15)'; }
+
+      tr.innerHTML = `
+        <td style="font-family: var(--font-mono); font-size: 0.82rem;">${log.date}</td>
+        <td>${log.system}</td>
+        <td style="font-family: var(--font-mono);">${log.height}</td>
+        <td style="font-family: var(--font-mono);">${log.weight}</td>
+        <td style="font-family: var(--font-mono); font-weight: 700;">${log.bmi}</td>
+        <td><span class="table-badge" style="color: ${badgeColor}; background: ${badgeBg};">${log.category}</span></td>
+        <td><button class="btn-icon" onclick="deleteHistory(${log.id})" title="Delete entry">🗑️</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function logMeasurement() {
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+    const bmiVal = parseFloat(document.getElementById('display-bmi-score').textContent);
+    const cat = document.getElementById('display-category-text').textContent;
+
+    let hStr = '';
+    let wStr = '';
+    if (currentUnit === 'metric') {
+      hStr = `${document.getElementById('input-height-cm').value} cm`;
+      wStr = `${document.getElementById('input-weight-kg').value} kg`;
+    } else {
+      hStr = `${document.getElementById('input-height-ft').value}'${document.getElementById('input-height-in').value}"`;
+      wStr = `${document.getElementById('input-weight-lb').value} lbs`;
+    }
+
+    const newEntry = {
+      id: Date.now(),
+      date: dateStr,
+      system: currentUnit === 'metric' ? 'Metric' : 'Imperial',
+      height: hStr,
+      weight: wStr,
+      bmi: bmiVal,
+      category: cat
+    };
+
+    historyLogs.push(newEntry);
+    localStorage.setItem('oibsip_bmi_history', JSON.stringify(historyLogs));
+    renderHistoryTable();
+    showToast('Measurement saved to history!');
+  }
+
+  function deleteHistory(id) {
+    historyLogs = historyLogs.filter(item => item.id !== id);
+    localStorage.setItem('oibsip_bmi_history', JSON.stringify(historyLogs));
+    renderHistoryTable();
+    showToast('Record deleted.');
+  }
+
+  function clearHistory() {
+    if (confirm('Are you sure you want to clear all history records?')) {
+      historyLogs = [];
+      localStorage.removeItem('oibsip_bmi_history');
+      renderHistoryTable();
+      showToast('All history cleared.');
+    }
+  }
+
+  function exportHistoryCSV() {
+    if (historyLogs.length === 0) {
+      alert('No records available to export.');
+      return;
+    }
+    let csv = 'ID,Date,System,Height,Weight,BMI,Category\n';
+    historyLogs.forEach(row => {
+      csv += `"${row.id}","${row.date}","${row.system}","${row.height}","${row.weight}","${row.bmi}","${row.category}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'BMI_History_Report.csv');
+    a.click();
+    showToast('CSV exported successfully!');
+  }
+
+  function resetForm() {
+    document.getElementById('input-age').value = 25;
+    document.getElementById('slider-age').value = 25;
+    document.getElementById('badge-age').textContent = '25 yrs';
+
+    document.getElementById('input-height-cm').value = 175;
+    document.getElementById('slider-height-cm').value = 175;
+    document.getElementById('badge-height').textContent = '175 cm';
+
+    document.getElementById('input-height-ft').value = 5;
+    document.getElementById('input-height-in').value = 9;
+    document.getElementById('badge-height-imp').textContent = '5 ft 9 in';
+
+    document.getElementById('input-weight-kg').value = 70;
+    document.getElementById('slider-weight-kg').value = 70;
+    document.getElementById('badge-weight').textContent = '70 kg';
+
+    document.getElementById('input-weight-lb').value = 154.3;
+    document.getElementById('slider-weight-lb').value = 154.3;
+    document.getElementById('badge-weight-imp').textContent = '154.3 lbs';
+
+    setGender('male');
+    setUnitSystem('metric');
+    calculateAll();
+    showToast('Form reset to default.');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  // Initial Load
+  calculateAll();
+  renderHistoryTable();
+</script>
+
+</body>
+</html>
