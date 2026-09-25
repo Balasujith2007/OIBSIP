@@ -1,0 +1,18 @@
+# =============================================================================
+# OIBSIP Task 3 — Random Password Generator Dependencies
+# =============================================================================
+# This application relies exclusively on Python standard library modules
+# ensuring zero external dependencies, maximum security, and instant setup.
+#
+# Standard Library Modules Utilized:
+# - secrets (Cryptographically secure pseudo-random number generator - CSPRNG)
+# - string (ASCII character set constants)
+# - math (Theoretical entropy log2 calculations)
+# - re (Regular expressions for pattern and repetition analysis)
+# - dataclasses (Immutable configuration and evaluation data structures)
+# - datetime (Timestamping for in-memory session metadata)
+# - tkinter (Native cross-platform desktop graphical user interface)
+# - unittest (Built-in automated unit testing framework)
+#
+# Minimum Requirements:
+# Python >= 3.8

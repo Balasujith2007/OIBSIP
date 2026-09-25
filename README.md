@@ -10,6 +10,7 @@ Repository containing Python internship projects submitted for the **Oasis Infob
 | :--- | :--- | :--- | :--- | :--- |
 | **Task 1** | **Voice Assistant** | Intelligent voice assistant capable of speech recognition, voice synthesis, weather lookup, reminders, web search, system automation, and CLI interface. | Python, `speech_recognition`, `pyttsx3`, `requests` | [View Task 1](./Python-Task1-VoiceAssistant) |
 | **Task 2** | **BMI Calculator** | Advanced Body Mass Index (BMI) calculator featuring modern Tkinter GUI & CLI modes, multi-user profiles, historical trend tracking with Matplotlib, category classification, and health tips. | Python, `tkinter`, `matplotlib`, `sqlite3` | [View Task 2](./Python-Task2-BMICalculator) |
+| **Task 3** | **Random Password Generator** | Cryptographically secure desktop password generator using Python's `secrets` CSPRNG, Fisher-Yates shuffle, real-time strength meter, theoretical entropy calculation, and session-only privacy. | Python, `secrets`, `tkinter` | [View Task 3](./Python-Task3-RandomPasswordGenerator) |
 
 ---
 
@@ -43,6 +44,14 @@ cd OIBSIP
 - User profile management and measurement history
 - Data visualization with graphical BMI trend charts
 - [Task 2 Documentation](./Python-Task2-BMICalculator/README.md)
+
+### 🔹 Task 3: Random Password Generator (`Python-Task3-RandomPasswordGenerator`)
+- Cryptographically secure random generation via `secrets` (CSPRNG)
+- Guaranteed category inclusion & Fisher-Yates shuffle
+- Real-time strength analyzer & Shannon entropy estimation
+- Ambiguous character exclusion & visibility toggle
+- Session-only metadata audit trail (Zero plaintext retention)
+- [Task 3 Documentation](./Python-Task3-RandomPasswordGenerator/README.md)
 
 ---
 
